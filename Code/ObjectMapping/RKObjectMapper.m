@@ -13,7 +13,6 @@
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
-#import "RKJSONParser.h"
 #import "Errors.h"
 
 // Default format string for date and time objects from Rails
@@ -85,9 +84,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 }
 
 - (void)setFormat:(RKMappingFormat)format {
-	if (format == RKMappingFormatXML) {
-		[NSException raise:@"No XML parser is available" format:@"RestKit does not currently have XML support. Use JSON."];
-	}
 	_format = format;
 }
 
@@ -98,8 +94,18 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 	NSObject<RKParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
 	if (!parser) {
+		NSString* parserClassname = nil;
 		if (_format == RKMappingFormatJSON) {
-			parser = [[RKJSONParser alloc] init];
+			parserClassname = @"RKJSONParser";
+		} else if (_format == RKMappingFormatXML) {
+			parserClassname = @"RKXMLParser";
+		}
+		if (parserClassname) {
+			Class parserClass = NSClassFromString(parserClassname);
+			parser = [[parserClass alloc] init];
+			if (!parser) 
+				[NSException raise:@"No parser is available" format:@"RestKit does not have %@ support compiled-in", parserClassname ];
+
 			[threadDictionary setObject:parser forKey:kRKModelMapperMappingFormatParserKey];
 			[parser release];
 		}
