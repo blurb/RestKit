@@ -7,12 +7,26 @@
 //
 
 #import "RKXMLParser.h"
-
+#import "RKNSXMLParserDelegate.h"
 
 @implementation RKXMLParser
 
 - (NSDictionary*)objectFromString:(NSString*)string {
-	return [NSDictionary dictionary];
+	
+    NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+	RKNSXMLParserDelegate *delegate = [[RKNSXMLParserDelegate alloc] init];
+    [parser setDelegate:delegate];
+	
+    // Turn off all those XML nits
+    [parser setShouldProcessNamespaces:NO];
+    [parser setShouldReportNamespacePrefixes:NO];
+    [parser setShouldResolveExternalEntities:NO];
+    
+	// Let'er rip
+    [parser parse];
+    [parser release];
+	return [delegate parsedObject];
+	
 }
 
 - (NSString*)stringFromObject:(id)object {
