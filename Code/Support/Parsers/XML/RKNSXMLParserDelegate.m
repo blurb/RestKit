@@ -60,6 +60,8 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
+	[currentValue release];
+	currentValue = nil;
 	if (state == ParseStateDictionary) {
 		state = ParseStateProperty;
 	} else if (state == ParseStateProperty) {

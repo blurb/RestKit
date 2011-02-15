@@ -251,4 +251,10 @@
 	return contentType && [contentType rangeOfString:@"application/json" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
 }
 
+- (BOOL)isMimeType:(NSString*)mimetype {
+	NSString* contentType = [self contentType];
+	return contentType && [contentType rangeOfString:mimetype options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+}
+
+
 @end

@@ -208,4 +208,10 @@
  */
 - (BOOL)isJSON;
 
+/**
+ * True when the server set the Content-Type to include the specified mimetype
+ */
+- (BOOL)isMimeType:(NSString*)mimetype;
+
+
 @end

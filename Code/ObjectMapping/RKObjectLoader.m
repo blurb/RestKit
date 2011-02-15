@@ -61,6 +61,16 @@
 	[super dealloc];
 }
 
+-(BOOL)isExpectedMimeType:(RKResponse*)response {
+	NSString* expectedMimeType = @"text";
+	if (_mapper.format == RKMappingFormatXML) {
+		expectedMimeType = @"application/xml";
+	} else if (_mapper.format == RKMappingFormatJSON) {
+		expectedMimeType = @"application/json";
+	}
+	return [response isMimeType:expectedMimeType];
+}
+
 - (void)setTargetObject:(NSObject<RKObjectMappable>*)targetObject {
 	[_targetObject release];
 	_targetObject = nil;	
@@ -108,7 +118,7 @@
 	} else if ([response isError]) {
 		NSError* error = nil;
 
-		if ([response isJSON]) {
+		if ([self isExpectedMimeType:response]) {
 			error = [_mapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 
@@ -272,8 +282,10 @@
 	}
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
-		// TODO: When other mapping formats are supported, unwind this assumption... Should probably be an expected MIME types array set by client/manager
-		if ([response isSuccessful] && [response isJSON]) {
+		
+
+		
+		if ([response isSuccessful] && [self isExpectedMimeType:response]) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
 			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);
