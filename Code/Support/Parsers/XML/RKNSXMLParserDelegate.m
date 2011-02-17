@@ -51,10 +51,10 @@
 	return result;
 }
 
--(NSMutableDictionary*)currentDictionary
+-(NSObject*)currentObject
 {
 	if ([stack count] > 0)
-		return (NSMutableDictionary*)[stack lastObject];
+		return [stack lastObject];
 	return nil;
 }
 
@@ -80,17 +80,34 @@
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
 {
-	NSMutableDictionary* dict = [self currentDictionary];
 	if (state == ParseStateProperty) {
 		// closed a property without seeing any children - just set the value of the dictionary
 		NSObject* value = (currentValue != nil) ? (NSObject*)currentValue : (NSObject*)[NSNull null];
+		NSMutableDictionary* dict = (NSMutableDictionary*)[self currentObject];
 		[dict setObject:value forKey:elementName];
 		state = ParseStateDictionary;
 	} else if (state == ParseStateDictionary) {
 		NSMutableDictionary* child = (NSMutableDictionary*)[self popObject];
-		NSMutableDictionary* parent = [self currentDictionary];
+		NSObject* parent = [self currentObject];
 		if (parent) {
-			[parent setObject:child forKey:elementName];
+			if ([parent isKindOfClass:[NSDictionary class]]) {
+				NSMutableDictionary* parentDict = (NSMutableDictionary*)parent;
+				NSObject* curValue = [parentDict objectForKey:elementName];
+				if (curValue) {
+					// we'll convert the parent into an array, but check that it only has one entry
+					if ([parentDict count] != 1) {
+						// throw exception -
+						[NSException raise:nil format:@"Can't mix array and properties"];
+					}
+					[self popObject];
+					[self pushObject:[NSMutableArray arrayWithObjects:parent, [NSDictionary dictionaryWithObject:child forKey:elementName], nil]];
+				} else {
+					[parentDict setObject:child forKey:elementName];
+				}
+			} else {
+				NSMutableArray* parentArray = (NSMutableArray*)parent;
+				[parentArray addObject:[NSDictionary dictionaryWithObjectsAndKeys:child, elementName, nil]];
+			}
 		}
 		state = ParseStateDictionary;
 	}
