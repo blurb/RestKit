@@ -17,6 +17,10 @@ static const NSTimeInterval kFlushDelay = 0.3;
 static const NSTimeInterval kTimeout = 300.0;
 static const NSInteger kMaxConcurrentLoads = 5;
 
+@interface RKRequestQueue ()
+- (void)loadNextInQueue;
+@end
+
 @implementation RKRequestQueue
 
 @synthesize suspended = _suspended;
@@ -60,17 +64,26 @@ static const NSInteger kMaxConcurrentLoads = 5;
 }
 
 - (void)loadNextInQueueDelayed {
+	NSLog(@"loadNextInQueueDelayed");
 	if (!_queueTimer) {
 		_queueTimer = [NSTimer scheduledTimerWithTimeInterval:kFlushDelay
 													   target:self
-													 selector:@selector(loadNextInQueue)
+													 selector:@selector(retryLoadNextInQueue)
 													 userInfo:nil
 													  repeats:NO];
 	}
 }
 
 - (void)dispatchRequest:(RKRequest*)request {
+	NSLog(@"dispatch request");
 	[request performSelector:@selector(fireAsynchronousRequest)];
+}
+
+-(void)retryLoadNextInQueue
+{
+	[_queueTimer invalidate];
+	_queueTimer = nil;
+	[self loadNextInQueue];
 }
 
 - (void)loadNextInQueue {
@@ -81,6 +94,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		return;
 	}
 
+	[_queueTimer invalidate];
 	_queueTimer = nil;
 
 	for (RKRequest* request in _requests) {
@@ -90,7 +104,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		}
 	}
 
-	if (_requests.count && !_suspended) {
+	if ((_requests.count > _totalLoading) && !_suspended) {
 		[self loadNextInQueueDelayed];
 	}
 }

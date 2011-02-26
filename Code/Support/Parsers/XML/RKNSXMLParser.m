@@ -14,7 +14,7 @@
 - (NSDictionary*)objectFromString:(NSString*)string {
 	
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
-	RKNSXMLParserDelegate *delegate = [[RKNSXMLParserDelegate alloc] init];
+	RKNSXMLParserDelegate *delegate = [[[RKNSXMLParserDelegate alloc] init] autorelease];
     [parser setDelegate:delegate];
 	
     // Turn off all those XML nits
