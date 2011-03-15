@@ -68,7 +68,8 @@
 	} else if (_mapper.format == RKMappingFormatJSON) {
 		expectedMimeType = @"application/json";
 	}
-	return [response isMimeType:expectedMimeType];
+	// total hack - server is returning the wrong mime type
+	return [response isMimeType:expectedMimeType] || [response isMimeType:@"text/html"];
 }
 
 - (void)setTargetObject:(NSObject<RKObjectMappable>*)targetObject {
