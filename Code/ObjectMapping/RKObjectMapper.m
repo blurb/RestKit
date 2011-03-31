@@ -128,7 +128,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	if (![errors isKindOfClass:[NSArray class]])
 		errors = [NSArray arrayWithObject:errors];
 
-	NSString* errorMessage = [errors componentsJoinedByString:_errorsConcatenationString];
+	NSString* errorMessage = [(NSArray*)errors componentsJoinedByString:_errorsConcatenationString];
 	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 							  errorMessage, NSLocalizedDescriptionKey,
 							  errors, RKRestKitErrorDomain, // include the Raw Errors object

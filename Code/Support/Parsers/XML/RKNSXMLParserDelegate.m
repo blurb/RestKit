@@ -62,10 +62,21 @@
 {
 	[currentValue release];
 	currentValue = nil;
+
+	//NSMutableDictionary* curObject = [self currentObject];
 	if (state == ParseStateDictionary) {
-		state = ParseStateProperty;
+		if ([attributeDict count]) {
+			
+			[self pushObject:[[[NSMutableDictionary alloc] initWithDictionary:attributeDict] autorelease]];
+		} else {
+			state = ParseStateProperty;
+		}
 	} else if (state == ParseStateProperty) {
 		[self pushObject:[[[NSMutableDictionary alloc] init] autorelease]];
+		if ([attributeDict count]) {
+			[self pushObject:[[[NSMutableDictionary alloc] initWithDictionary:attributeDict] autorelease]];
+			state = ParseStateDictionary;
+		}
 	}
 }
 
@@ -88,6 +99,11 @@
 		state = ParseStateDictionary;
 	} else if (state == ParseStateDictionary) {
 		NSMutableDictionary* child = (NSMutableDictionary*)[self popObject];
+		if (currentValue) {
+			NSString* trimmedValue = [currentValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+			if ([trimmedValue length]) 
+				[child setObject:trimmedValue forKey:@"value"];
+		}
 		NSObject* parent = [self currentObject];
 		if (parent) {
 			if ([parent isKindOfClass:[NSDictionary class]]) {
