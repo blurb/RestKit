@@ -125,8 +125,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	NSDictionary* errorResponse = [self parseString:string];
 	// Note: with xml error response, a single error response is not in an array, so we'll wrap it if needed
     NSObject* errors = [errorResponse valueForKeyPath:_errorsKeyPath];
-	if (![errors isKindOfClass:[NSArray class]])
-		errors = [NSArray arrayWithObject:errors];
+	if (errors) {
+		if (![errors isKindOfClass:[NSArray class]])
+			errors = [NSArray arrayWithObject:errors];
+	} else {
+		errors = [NSArray arrayWithObject:@"Unknown error"];
+	}
 
 	NSString* errorMessage = [(NSArray*)errors componentsJoinedByString:_errorsConcatenationString];
 	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:

@@ -23,8 +23,8 @@
     [parser setShouldResolveExternalEntities:NO];
     
 	// Let'er rip
-    [parser parse];
-    [parser release];
+	[parser parse];
+	[parser release];
 	return [delegate parsedObject];
 	
 }
