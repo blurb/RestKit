@@ -172,6 +172,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 - (void)unscheduleObserver {
 	if (nil != _reachabilityRef) {
+		SCNetworkReachabilitySetCallback(_reachabilityRef, nil, nil);
 		SCNetworkReachabilityUnscheduleFromRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 	}
 }
