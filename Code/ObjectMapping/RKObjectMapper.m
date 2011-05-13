@@ -155,7 +155,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		} else {
 			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
 		}
-	} else if (nil == object) {
+	} else if (nil == object || [NSNull null] == object) {
 		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return nil;
 	} else {
