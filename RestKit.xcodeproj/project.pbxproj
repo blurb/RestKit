@@ -369,7 +369,7 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(SOURCE_ROOT)/Build/RestKit";
+			dstPath = "$(BUILT_PRODUCTS_DIR)/../RestKit";
 			dstSubfolderSpec = 0;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
