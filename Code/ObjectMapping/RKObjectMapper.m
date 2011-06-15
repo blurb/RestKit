@@ -92,7 +92,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 - (id)parseString:(NSString*)string {
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-	NSObject<RKParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
+    NSString *threadFormat = [NSString stringWithFormat:@"%@_%d", kRKModelMapperMappingFormatParserKey, _format];
+	NSObject<RKParser>* parser = [threadDictionary objectForKey:threadFormat];
+    
 	if (!parser) {
 		NSString* parserClassname = nil;
 		if (_format == RKMappingFormatJSON) {
@@ -106,7 +108,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			if (!parser) 
 				[NSException raise:@"No parser is available" format:@"RestKit does not have %@ support compiled-in", parserClassname ];
 
-			[threadDictionary setObject:parser forKey:kRKModelMapperMappingFormatParserKey];
+			[threadDictionary setObject:parser forKey:threadFormat];
 			[parser release];
 		}
 	}
