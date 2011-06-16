@@ -69,7 +69,7 @@
 		expectedMimeType = @"application/json";
 	}
 	// total hack - server is returning the wrong mime type
-	return [response isMimeType:expectedMimeType];
+	return [response isMimeType:expectedMimeType] || [response isMimeType:@"text/html"];
 }
 
 - (void)setTargetObject:(NSObject<RKObjectMappable>*)targetObject {
