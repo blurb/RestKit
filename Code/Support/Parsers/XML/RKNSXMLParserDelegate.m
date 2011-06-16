@@ -113,7 +113,7 @@
 					// we'll convert the parent into an array, but check that it only has one entry
 					if ([parentDict count] != 1) {
 						// throw exception -
-						[NSException raise:nil format:@"Can't mix array and properties"];
+						[NSException raise:NSGenericException format:@"Can't mix array and properties"];
 					}
 					[self popObject];
 					[self pushObject:[NSMutableArray arrayWithObjects:parent, [NSDictionary dictionaryWithObject:child forKey:elementName], nil]];
