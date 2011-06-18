@@ -214,6 +214,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 // TODO: Can I make this support keyPath??
 - (id)mapObjectFromDictionary:(NSDictionary*)dictionary {
+    //Empty server responses can result in empty dictionaries.
+    if (![dictionary count]) {
+        return nil;
+    }
+    
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
 	NSDictionary* elements = [dictionary objectForKey:elementName];
