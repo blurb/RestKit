@@ -157,6 +157,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		} else {
 			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
 		}
+    } else if ([object isKindOfClass:[NSString class]] && [[((NSString*)object) stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0) {
+        NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from an empty payload. Skipping...");
+        //an empty set
+        return nil;
 	} else if (nil == object || [NSNull null] == object) {
 		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return nil;
