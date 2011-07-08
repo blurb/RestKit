@@ -76,6 +76,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	[_dateFormats release];
 	[_errorsKeyPath release];
 	[_errorsConcatenationString release];
+    [_remoteTimeZone release];
 	[super dealloc];
 }
 
