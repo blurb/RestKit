@@ -12,6 +12,7 @@
 			buildConfigurationList = 2595697A126DF0E3004BAC4C /* Build configuration list for PBXAggregateTarget "RestKit" */;
 			buildPhases = (
 				25956979126DF0E3004BAC4C /* Copy Headers */,
+				B4C8933F13CD1B09007C8DD5 /* Copy Header for xcodebuild */,
 				25956980126DF159004BAC4C /* Protect Copied Headers */,
 			);
 			dependencies = (
@@ -1832,6 +1833,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh Scripts/Protect.command";
 			shellScript = "";
+		};
+		B4C8933F13CD1B09007C8DD5 /* Copy Header for xcodebuild */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Header for xcodebuild";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp -f ${SOURCE_ROOT}/Code/RestKit.h ${SOURCE_ROOT}/Build/RestKit/";
 		};
 /* End PBXShellScriptBuildPhase section */
 
