@@ -132,7 +132,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		if (![errors isKindOfClass:[NSArray class]])
 			errors = [NSArray arrayWithObject:errors];
 	} else {
-		errors = [NSArray arrayWithObject:@"Unknown error"];
+        NSDictionary* unknownError = [NSDictionary dictionaryWithKeysAndObjects:@"error", 
+                                        [NSDictionary dictionaryWithKeysAndObjects:@"code", @"global.unknown",
+                                                                                  @"message", @"Unknown error", nil], 
+                                        nil];
+		errors = [NSArray arrayWithObject:unknownError];
 	}
 
 	NSString* errorMessage = [(NSArray*)errors componentsJoinedByString:_errorsConcatenationString];

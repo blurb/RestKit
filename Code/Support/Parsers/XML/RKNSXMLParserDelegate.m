@@ -58,6 +58,12 @@
 	return nil;
 }
 
+-(void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError
+{
+    [rootObject release];
+    rootObject = nil;
+}
+
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
 	[currentValue release];
@@ -113,7 +119,11 @@
 					// we'll convert the parent into an array, but check that it only has one entry
 					if ([parentDict count] != 1) {
 						// throw exception -
-						[NSException raise:NSGenericException format:@"Can't mix array and properties"];
+                        NSLog(@"Bad response while parsing: %@",elementName);
+                        [parser abortParsing];
+                        [currentValue release];
+                        currentValue = nil;
+                        return;
 					}
 					[self popObject];
 					[self pushObject:[NSMutableArray arrayWithObjects:parent, [NSDictionary dictionaryWithObject:child forKey:elementName], nil]];
