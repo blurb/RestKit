@@ -39,6 +39,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 - (NSDate*)parseDateFromString:(NSString*)string;
 - (NSDate*)dateInLocalTime:(NSDate*)date;
+- (id)getChildArray:object;
 
 @end
 
@@ -149,13 +150,66 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return error;
 }
 
+/*Checks for something that looks like:
+ *    <objects>
+ *        <object />
+ *        <object />
+ *    </objects>
+ * and returns the child array if the root object conforms to this expectation. 
+ * TODO: Could loosen the expectation to allow an array of any child of a recognized
+ *       type, instead of enforcing same-type child objects.
+ */
+- (id)getChildArray:rootObject {
+    //check for single wrapper object, like 'objects'
+    if ([rootObject count] == 1) {
+        //get the single content of 'objects'
+        NSArray *objects = [[rootObject allValues] objectAtIndex:0];
+        //check if root object contains an array of objects
+        if (objects && [objects isKindOfClass:NSArray.class]) {
+            NSArray *objectsArr = (NSArray*)objects;
+            if (objectsArr.count) {
+                
+                NSString *childKey = nil;
+                //Make sure all the child nodes are of the same type
+                for (id child in objectsArr) {
+                    if (!child || ![child isKindOfClass:NSDictionary.class]) {
+                        return nil;
+                    }
+                    NSDictionary *childDict = (NSDictionary*)child;
+                    if (childDict.count != 1) {
+                        return nil;
+                    }
+                    
+                    NSString *childFieldName = [[childDict allKeys] objectAtIndex:0];
+                    if (!childKey) {
+                        childKey = childFieldName;
+                    } else if (![childKey isEqualToString:childFieldName]){
+                        return nil;
+                    }
+                }
+                //If the child type is known, return the array.
+                if ([_elementToClassMappings objectForKey:childKey])
+                    return objectsArr;
+            }
+        }
+    }
+    return nil;
+}
+
 - (id)mapFromString:(NSString*)string toClass:(Class)class keyPath:(NSString*)keyPath {
 	id object = [self parseString:string];
 	if (keyPath) {
 		object = [object valueForKeyPath:keyPath];
 	}
 	if ([object isKindOfClass:[NSDictionary class]]) {
-		return [self mapObjectFromDictionary:(NSDictionary*)object];
+        id mapObj = [self mapObjectFromDictionary:(NSDictionary*)object];
+        if (!mapObj && !keyPath) {
+            id childObject = [self getChildArray:object];
+            if (childObject) {
+                mapObj = [self mapObjectsFromArrayOfDictionaries:(NSArray*)childObject];
+            }
+        }
+        return mapObj;
 	} else if ([object isKindOfClass:[NSArray class]]) {
 		if (class) {
 			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object toClass:class];
@@ -399,7 +453,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		}
         
         // Handle missing elements for the relationship
-        if (relationshipElements == nil) {
+        if (relationshipElements == nil || relationshipElements == NSNull.null) {
             if (self.missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy) {
                 [object setValue:nil forKey:propertyName];
                 continue;
