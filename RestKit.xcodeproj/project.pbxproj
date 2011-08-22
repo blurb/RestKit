@@ -183,6 +183,7 @@
 		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
 		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; };
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
+		99A2A27014031AA60095ACA2 /* RestKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A089212551D8D00976E89 /* RestKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4371E211306EE670086F8B5 /* CoreSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DE61306EE670086F8B5 /* CoreSupport.h */; };
 		B4371E221306EE670086F8B5 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DE81306EE670086F8B5 /* NSString+InflectionSupport.h */; };
 		B4371E241306EE670086F8B5 /* NSData+Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DEA1306EE670086F8B5 /* NSData+Additions.h */; };
@@ -369,8 +370,8 @@
 		};
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = ../../RestKit;
+			buildActionMask = 12;
+			dstPath = ../RestKit;
 			dstSubfolderSpec = 16;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
@@ -1382,6 +1383,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99A2A27014031AA60095ACA2 /* RestKit.h in Headers */,
 				253A08AF12551EA500976E89 /* Network.h in Headers */,
 				253A08CC125522CE00976E89 /* NSDictionary+RKRequestSerialization.h in Headers */,
 				253A08CF125522D200976E89 /* RKClient.h in Headers */,
@@ -1846,7 +1848,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -f ${SOURCE_ROOT}/Code/RestKit.h ${SOURCE_ROOT}/Build/RestKit/";
+			shellScript = "cp -f ${SOURCE_ROOT}/Code/RestKit.h ${SOURCE_ROOT}/Build/RestKit/\n#cp -f ${BUILT_PRODUCTS_DIR}/RestKit/RestKit.h ${SOURCE_ROOT}/Build/RestKit/";
 		};
 /* End PBXShellScriptBuildPhase section */
 
