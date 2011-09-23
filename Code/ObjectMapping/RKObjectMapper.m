@@ -31,6 +31,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
 - (id)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+- (id)createOrUpdateInstanceOfInferredModelClass:(Class)class fromElements:(NSDictionary*)elements;
 
 - (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName; // Rename!
 - (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements;
@@ -506,35 +507,18 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
             }
             
             for (NSDictionary* childElements in relationshipElements) {	
-                Class modelClass = forcedModelClass;
-                NSDictionary *modelProperties = childElements;
-                if (NIL_CLASS(modelClass)) {
-                    if (childElements.count == 1) {
-                        //This is a hack for supporting child elements that are dictionaries
-                        //keyed by class name.
-                        NSString *className = [[childElements allKeys] objectAtIndex:0];
-                        modelClass = [_elementToClassMappings valueForKeyPath:className];
-                        if (NIL_CLASS(modelClass)) {
-                            NSLog(@"Warning: could not find a class mapping for nested object '%@':", className);
-                        } else {
-                            modelProperties = [childElements objectForKey:className];
-                        }
-                    }
-                    
-                    if (NIL_CLASS(modelClass)) 
-                        continue;
-                } 
-                
-                id child = [self createOrUpdateInstanceOfModelClass:modelClass fromElements:modelProperties];		
+                id child = [self createOrUpdateInstanceOfInferredModelClass:forcedModelClass fromElements:childElements];		
                 if (child) {
                     [(NSMutableArray*)children addObject:child];
                 }
             }
             
             [object setValue:children forKey:propertyName];
-        } else if ([relationshipElements isKindOfClass:[NSDictionary class]]) {
-            id child = [self createOrUpdateInstanceOfModelClass:forcedModelClass fromElements:relationshipElements];		
-            [object setValue:child forKey:propertyName];
+        } else if ([relationshipElements isKindOfClass:[NSDictionary class]]) {  
+            id child = [self createOrUpdateInstanceOfInferredModelClass:forcedModelClass fromElements:relationshipElements];		
+            if (child) {
+                [object setValue:child forKey:propertyName];
+            }
         }
     }
     
@@ -563,6 +547,28 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
             }
         }
     }
+}
+
+- (id)createOrUpdateInstanceOfInferredModelClass:(Class)forcedModelClass fromElements:(NSDictionary*)childElements {
+    Class modelClass = forcedModelClass;
+    NSDictionary *modelProperties = childElements;
+    if (NIL_CLASS(modelClass)) {
+        if (childElements.count == 1) {
+            //This is a hack for supporting child elements that are dictionaries
+            //keyed by class name.
+            NSString *className = [[childElements allKeys] objectAtIndex:0];
+            modelClass = [_elementToClassMappings valueForKeyPath:className];
+            if (NIL_CLASS(modelClass)) {
+                NSLog(@"Warning: could not find a class mapping for nested object '%@':", className);
+                
+                return nil;
+            } else {
+                modelProperties = [childElements objectForKey:className];
+            }
+        }
+    } 
+    
+    return [self createOrUpdateInstanceOfModelClass:modelClass fromElements:modelProperties];	
 }
 
 //This method did not support arrays containing children of multiple types, so it was 
