@@ -1848,7 +1848,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -f ${SOURCE_ROOT}/Code/RestKit.h ${SOURCE_ROOT}/Build/RestKit/\n#cp -f ${BUILT_PRODUCTS_DIR}/RestKit/RestKit.h ${SOURCE_ROOT}/Build/RestKit/";
+			shellScript = "cp -f ${SOURCE_ROOT}/Code/RestKit.h ${SOURCE_ROOT}/Build/RestKit/\ncp -f ${SOURCE_ROOT}/Code/RestKit.h ${BUILT_PRODUCTS_DIR}/../../RestKit/RestKit.h";
 		};
 /* End PBXShellScriptBuildPhase section */
 
