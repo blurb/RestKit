@@ -2082,7 +2082,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ARCHS = (
-					armv7,
+					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
 				BUILD_STYLE = Debug;
@@ -2107,7 +2107,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ARCHS = (
-					armv7,
+					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
 				BUILD_STYLE = Release;
