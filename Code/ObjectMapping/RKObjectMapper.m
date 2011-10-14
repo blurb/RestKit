@@ -41,6 +41,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 - (NSDate*)parseDateFromString:(NSString*)string;
 - (NSDate*)dateInLocalTime:(NSDate*)date;
 - (id)getChildArray:object;
+- (NSArray*)getArrayOfValues:(NSDictionary*)elements;
 
 @end
 
@@ -287,6 +288,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
     
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
+    
+    //TODO: Something is wrong here because elements can also be an array. Not
+    //sure why this assumption/typecast was made. (luke)
 	NSDictionary* elements = [dictionary objectForKey:elementName];
 	
 	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
@@ -481,7 +485,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
         
 		id relationshipElements = nil;
 		@try {
-			relationshipElements = [elements valueForKeyPath:elementKeyPath];
+            if ([elementKeyPath isEqualToString:@"*"]) {
+                relationshipElements = [self getArrayOfValues: elements];
+            } else {
+                relationshipElements = [elements valueForKeyPath:elementKeyPath];
+            }
 		}
 		@catch (NSException* e) {
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
@@ -546,6 +554,20 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
                 [managedObject setValue:relationshipValue forKey:relationship];
             }
         }
+    }
+}
+
+//Turn the elements dictionary into an array of sub-dictionaries
+-(NSArray*)getArrayOfValues:(NSDictionary*)elements {
+    //Due to a parsing quirk, elements could be an array already
+    if ([elements isKindOfClass:NSArray.class]) {
+        return (NSArray*)elements;
+    } else {
+        NSMutableArray *values = [NSMutableArray arrayWithCapacity:elements.count];
+        for (NSString*key in elements.allKeys) {
+            [values addObject: [NSDictionary dictionaryWithKeysAndObjects:key, [elements objectForKey:key], nil]];
+        }
+        return values;
     }
 }
 
