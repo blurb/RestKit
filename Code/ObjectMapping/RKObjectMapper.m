@@ -167,9 +167,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
     //check for single wrapper object, like 'objects'
     if ([rootObject count] == 1) {
         //get the single content of 'objects'
-        NSArray *objects = [[rootObject allValues] objectAtIndex:0];
+        id objects = [[rootObject allValues] objectAtIndex:0];
         //check if root object contains an array of objects
-        if (objects && [objects isKindOfClass:NSArray.class]) {
+        if ([objects isKindOfClass:NSArray.class]) {
             NSArray *objectsArr = (NSArray*)objects;
             if (objectsArr.count) {
                 
@@ -195,6 +195,17 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
                 if ([_elementToClassMappings objectForKey:childKey])
                     return objectsArr;
             }
+        } else if ([objects isKindOfClass:NSDictionary.class]) {
+            //Look for an 'array' of one item. XML docs will yield a dictionary instead of an
+            //array of one.
+            NSDictionary *dict = (NSDictionary*)objects;
+            if (dict.count == 1) {
+                NSString *key = [[dict allKeys] objectAtIndex:0];
+                if ([_elementToClassMappings objectForKey:key]) {
+                    return [NSArray arrayWithObjects:dict, nil];
+                }
+            }
+            
         }
     }
     return nil;
@@ -289,8 +300,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
     
-    //TODO: Something is wrong here because elements can also be an array. Not
-    //sure why this assumption/typecast was made. (luke)
+    //TODO: The type of this object cannot be trusted. It's cast to a dictionary
+    //but it can also be an array (luke)
 	NSDictionary* elements = [dictionary objectForKey:elementName];
 	
 	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
@@ -512,6 +523,13 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
                 children = [NSMutableSet setWithCapacity:[relationshipElements count]];
             } else if ([collectionClass isSubclassOfClass:[NSArray class]]) {
                 children = [NSMutableArray arrayWithCapacity:[relationshipElements count]];
+            }
+            
+            if ([relationshipElements isKindOfClass:NSDictionary.class]) {
+                //special case of single element 'array' from an xml doc. 
+                //relationshipElements will then contain the contents of the first element, 
+                //instead of an array of one item
+                relationshipElements = [NSArray arrayWithObjects: relationshipElements, nil];
             }
             
             for (NSDictionary* childElements in relationshipElements) {	
