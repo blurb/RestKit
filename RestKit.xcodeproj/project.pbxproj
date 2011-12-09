@@ -188,7 +188,7 @@
 		B4371E221306EE670086F8B5 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DE81306EE670086F8B5 /* NSString+InflectionSupport.h */; };
 		B4371E241306EE670086F8B5 /* NSData+Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DEA1306EE670086F8B5 /* NSData+Additions.h */; };
 		B4371E251306EE670086F8B5 /* NSData+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B4371DEB1306EE670086F8B5 /* NSData+Additions.m */; };
-		B4371E261306EE670086F8B5 /* NSObject+PropertySupport.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DEC1306EE670086F8B5 /* NSObject+PropertySupport.h */; };
+		B4371E261306EE670086F8B5 /* NSObject+PropertySupport.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DEC1306EE670086F8B5 /* NSObject+PropertySupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4371E271306EE670086F8B5 /* NSObject+PropertySupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B4371DED1306EE670086F8B5 /* NSObject+PropertySupport.m */; };
 		B4371E281306EE670086F8B5 /* NSString+GSub.h in Headers */ = {isa = PBXBuildFile; fileRef = B4371DEE1306EE670086F8B5 /* NSString+GSub.h */; };
 		B4371E291306EE670086F8B5 /* NSString+GSub.m in Sources */ = {isa = PBXBuildFile; fileRef = B4371DEF1306EE670086F8B5 /* NSString+GSub.m */; };
@@ -2484,7 +2484,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = ObjectiveSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = /../ObjectiveSupport;
 				SKIP_INSTALL = NO;
 			};
 			name = Debug;
@@ -2498,7 +2498,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = ObjectiveSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = /../ObjectiveSupport;
 				SKIP_INSTALL = NO;
 				ZERO_LINK = NO;
 			};
